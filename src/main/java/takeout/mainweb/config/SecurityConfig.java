@@ -20,7 +20,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+        http.formLogin().loginPage("/login").loginProcessingUrl("/user/login")
+                .defaultSuccessUrl("/index").permitAll()
+                .and().authorizeRequests()
+                .antMatchers("/", "/index","/login","/register",
+                        "/v2/api-docs", "/configuration/ui", "/swagger-resources",
+                        "/configuration/security", "/swagger-ui.html", "/webjars/**",
+                        "/swagger-resources/configuration/ui","/swagge‌​r-ui.html")
+                .permitAll()
+                .antMatchers("/user/admin").hasAuthority("admin")
+                .anyRequest().authenticated()
+                .and().csrf().disable();
 //        http
 //                .authorizeRequests()
 //                //访问"/"和"/home"路径的请求都允许

@@ -29,6 +29,8 @@ public class MyUserDetailsService implements UserDetailsService {
         QueryWrapper<User> wrapper=new QueryWrapper<>();
         wrapper.eq("username",username);
         User user=userMapper.selectOne(wrapper);
+
+
         if (user==null){
             throw new UsernameNotFoundException("用户名不存在");
         }
