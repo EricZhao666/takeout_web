@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import takeout.mainweb.Mapper.UserMapper;
+import takeout.mainweb.entiy.LoginUser;
 import takeout.mainweb.entiy.User;
 
 
@@ -29,15 +30,18 @@ public class MyUserDetailsService implements UserDetailsService {
         QueryWrapper<User> wrapper=new QueryWrapper<>();
         wrapper.eq("username",username);
         User user=userMapper.selectOne(wrapper);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
 
         if (user==null){
             throw new UsernameNotFoundException("用户名不存在");
         }
         else {
-            List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole());
-            return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                    new BCryptPasswordEncoder().encode(user.getPassword()),auth);
+//            List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole());
+//            return new org.springframework.security.core.userdetails.User(user.getUsername(),
+//                    new BCryptPasswordEncoder().encode(user.getPassword()),auth);
+            return new LoginUser(user);
+
         }
 
     }

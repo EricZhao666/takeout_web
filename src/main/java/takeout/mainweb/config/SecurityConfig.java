@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import takeout.mainweb.Service.MyUserDetailsService;
+import takeout.mainweb.component.JwtAuthenticationTokenFilter;
 
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -21,19 +23,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsService userDetailsService;
 
+    @Autowired
+    JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin().loginPage("/login").loginProcessingUrl("/user/login")
-                .defaultSuccessUrl("/index").permitAll()
-                .and().authorizeRequests()
+        http.authorizeRequests()
                 .antMatchers("/", "/index","/login","/register",
                         "/v2/api-docs", "/configuration/ui", "/swagger-resources",
                         "/configuration/security", "/swagger-ui.html", "/webjars/**",
-                        "/swagger-resources/configuration/ui","/swagge‌​r-ui.html")
+                        "/swagger-resources/configuration/ui","/swagge‌​r-ui.html","/user/logout")
                 .permitAll()
                 .antMatchers("/user/admin").hasAuthority("admin")
                 .anyRequest().authenticated()
                 .and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        //添加过滤器
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 //        http
 //                .authorizeRequests()
 //                //访问"/"和"/home"路径的请求都允许

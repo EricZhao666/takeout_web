@@ -26,7 +26,7 @@ public class UserController {
     private LoginService loginService;
 
     @ApiOperation("登录方法")
-    @PostMapping (value = "/login")
+    @RequestMapping (value = "/login",method = RequestMethod.POST)
     @ResponseBody
     public ResponseResult login(@RequestParam("username") String name,
                                 @RequestParam("password") String pwd,
@@ -34,6 +34,20 @@ public class UserController {
                                 HttpSession session){
 
         return loginService.login(name,pwd);
+
+    }
+
+    @RequestMapping(value="/hello",method = RequestMethod.GET)
+    @ResponseBody
+    public String hello(){
+        return "hello";
+    }
+
+    @ApiOperation("退出方法")
+    @RequestMapping(value="/user/logout",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseResult logout(){
+        return loginService.logout();
 
     }
 
