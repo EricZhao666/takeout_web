@@ -101,7 +101,7 @@ public class GoodController {
         return JSON.toJSONString(new JsonUtils(1, "开始交易"));
     }
 
-    @ApiOperation("买家/卖家取消订单，系统帮卖家重新上架商品，重新上架的商品更换ID")
+    @ApiOperation("买家/卖家取消订单，系统帮卖家重新上架商品")
     @RequestMapping(value = "/cancelOrder/{goodID}", method = RequestMethod.PUT)
     @ResponseBody
     public Object cancelOrder(@RequestParam("goodID") String goodID) {
@@ -122,7 +122,7 @@ public class GoodController {
         return JSON.toJSONString(new JsonUtils(1, "订单取消"));
     }
 
-    @ApiOperation("卖家下架商品")
+    @ApiOperation("卖家下架商品（此时商品还没有买家拍下）")
     @RequestMapping(value = "/offGood/{goodID}", method = RequestMethod.PUT)
     @ResponseBody
     public Object offGood(@RequestParam("goodID") String goodID) {
