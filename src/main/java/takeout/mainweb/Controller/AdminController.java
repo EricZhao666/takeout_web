@@ -18,11 +18,19 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/checked")
-@Api("管理员审核")
-public class CheckController {
+@Api("管理员功能")
+public class AdminController {
 
     @Autowired
     GoodMapper goodMapper;
+
+    @ApiOperation("查看所有商品")
+    @RequestMapping(value = "/findAllGood", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Good> findAllGood() {
+        List<Good> list = goodMapper.selectList(null);
+        return list;
+    }
 
     @ApiOperation("查看所有待审核商品")
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
@@ -33,6 +41,17 @@ public class CheckController {
         List<Good> list = goodMapper.selectList(wrapper);
         return list;
 
+    }
+
+    @ApiOperation("管理员通过ID搜索商品")
+    @RequestMapping(value = "/searchGoodByID/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Good> findGoodByID(@RequestParam("goodID") String goodID) {
+
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", goodID);
+        List<Good> list = goodMapper.selectList(wrapper);
+        return list;
     }
 
     @ApiOperation("通过ID，审核通过商品")

@@ -1,19 +1,23 @@
 package takeout.mainweb.Controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import takeout.mainweb.Mapper.GoodMapper;
 import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.Service.LoginService;
 import takeout.mainweb.component.*;
+import takeout.mainweb.entiy.Good;
 import takeout.mainweb.entiy.User;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -25,6 +29,9 @@ public class UserController {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    GoodMapper goodMapper;
 
     @ApiOperation("登录方法")
     @RequestMapping (value = "/login",method = RequestMethod.POST)
@@ -62,6 +69,26 @@ public class UserController {
         int insert = userMapper.insert(user);
         return JSON.toJSONString(new JsonUtils(0, "注册成功"));
 
+    }
+
+    @ApiOperation("卖家查看自己所有的商品（审核的，上架的，卖出的）")
+    @RequestMapping(value = "/sellerGoods/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object sellerGoods(@RequestParam("sellerID") String sellerID) {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("seller_id", sellerID);
+        List<Good> list = goodMapper.selectList(wrapper);
+        return list;
+    }
+
+    @ApiOperation("买家查看自己所有的商品（买到的）")
+    @RequestMapping(value = "/buyerGoods/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object buyerGoods(@RequestParam("buyerID") String buyerID) {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("buyer_id", buyerID);
+        List<Good> list = goodMapper.selectList(wrapper);
+        return list;
     }
 
 }

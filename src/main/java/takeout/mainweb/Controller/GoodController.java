@@ -27,14 +27,6 @@ public class GoodController {
     @Autowired
     GoodMapper goodMapper;
 
-    @ApiOperation("查看所有商品")
-    @RequestMapping(value = "/findAllGood", method = RequestMethod.GET)
-    @ResponseBody
-    public List<Good> findAllGood() {
-        List<Good> list = goodMapper.selectList(null);
-        return list;
-    }
-
     @ApiOperation("查找所有上架中的商品")
     @RequestMapping(value = "/findSellingGood", method = RequestMethod.GET)
     @ResponseBody
@@ -56,17 +48,6 @@ public class GoodController {
         return list;
     }
 
-    @ApiOperation("管理员通过ID搜索商品")
-    @RequestMapping(value = "/searchGoodByID/{goodID}", method = RequestMethod.GET)
-    @ResponseBody
-    public List<Good> findGoodByID(@RequestParam("goodID") String goodID) {
-
-        QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", goodID);
-        List<Good> list = goodMapper.selectList(wrapper);
-        return list;
-    }
-
     @ApiOperation("用户上传商品，等待审核")
     @RequestMapping(value = "/uploadGood", method = RequestMethod.POST)
     @ResponseBody
@@ -84,6 +65,33 @@ public class GoodController {
         good.setState("审核中");
         int insert = goodMapper.insert(good);
         return JSON.toJSONString(new JsonUtils(0, "上传成功"));
+    }
+
+
+    @ApiOperation("买家购买商品")
+    @RequestMapping(value = "/buyGood/{goodID}", method = RequestMethod.PUT)
+    @ResponseBody
+    public Object buyGood(@RequestParam("goodID") String goodID,
+                          @RequestParam("buyerID") String buyerID) {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", goodID);
+        Good good = goodMapper.selectOne(wrapper);
+        good.setState("交易中");
+        good.setBuyerId(buyerID);
+        int result=goodMapper.updateById(good);
+        return JSON.toJSONString(new JsonUtils(1,"开始交易"));
+    }
+
+    @ApiOperation("商品交易成功")
+    @RequestMapping(value = "/GoodOver/{goodID}", method = RequestMethod.PUT)
+    @ResponseBody
+    public Object buyGood(@RequestParam("goodID") String goodID) {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", goodID);
+        Good good = goodMapper.selectOne(wrapper);
+        good.setState("交易成功");
+        int result=goodMapper.updateById(good);
+        return JSON.toJSONString(new JsonUtils(1,"交易成功"));
     }
 
 }
