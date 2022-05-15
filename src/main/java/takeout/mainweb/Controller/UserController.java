@@ -8,10 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.Service.LoginService;
-import takeout.mainweb.component.JsonUtils;
-import takeout.mainweb.component.MD5Util;
-import takeout.mainweb.component.ResponseResult;
-import takeout.mainweb.component.UuidTool;
+import takeout.mainweb.component.*;
 import takeout.mainweb.entiy.User;
 
 import javax.servlet.http.Cookie;
@@ -19,11 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
-@Api("登录注册")
+@RequestMapping("/user")
+@Api("用户功能")
 public class UserController {
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    UserMapper userMapper;
 
     @ApiOperation("登录方法")
     @RequestMapping (value = "/login",method = RequestMethod.POST)
@@ -48,6 +49,18 @@ public class UserController {
     @ResponseBody
     public ResponseResult logout(){
         return loginService.logout();
+
+    }
+
+    @ApiOperation("注册方法")
+    @RequestMapping(value = "/regist", method = RequestMethod.POST)
+    @ResponseBody
+    public Object regist(@RequestParam("username") String name,
+                         @RequestParam("password") String pwd) {
+        String id = KeyUtil.getUniqueKey();
+        User user = new User(id, name, pwd, "user", "", 0);
+        int insert = userMapper.insert(user);
+        return JSON.toJSONString(new JsonUtils(0, "注册成功"));
 
     }
 
