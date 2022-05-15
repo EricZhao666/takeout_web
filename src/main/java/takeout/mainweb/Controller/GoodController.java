@@ -27,7 +27,7 @@ public class GoodController {
     @Autowired
     GoodMapper goodMapper;
 
-    @ApiOperation("查找所有商品")
+    @ApiOperation("查看所有商品")
     @RequestMapping(value = "/findAllGood", method = RequestMethod.GET)
     @ResponseBody
     public List<Good> findAllGood() {
@@ -35,13 +35,34 @@ public class GoodController {
         return list;
     }
 
-    @ApiOperation("模糊搜索商品")
-    @RequestMapping(value = "/searchNovel/{goodName}", method = RequestMethod.GET)
+    @ApiOperation("查找所有上架中的商品")
+    @RequestMapping(value = "/findSellingGood", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Good> findSellingGood() {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("state", "上架中");
+        List<Good> list = goodMapper.selectList(wrapper);
+        return list;
+    }
+
+    @ApiOperation("用户模糊搜索商品")
+    @RequestMapping(value = "/searchGood/{goodName}", method = RequestMethod.GET)
     @ResponseBody
     public List<Good> findGood(@RequestParam("goodName") String goodName) {
 
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
         wrapper.like("good_name", goodName);
+        List<Good> list = goodMapper.selectList(wrapper);
+        return list;
+    }
+
+    @ApiOperation("管理员通过ID搜索商品")
+    @RequestMapping(value = "/searchGoodByID/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Good> findGoodByID(@RequestParam("goodID") String goodID) {
+
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", goodID);
         List<Good> list = goodMapper.selectList(wrapper);
         return list;
     }
