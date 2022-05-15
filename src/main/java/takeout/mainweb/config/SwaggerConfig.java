@@ -25,11 +25,12 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
+
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("利用swagger构建api文档")
-                .description("简单使用swagger2")
-                .version("1.0")
+                .title("翼燕丁真，鉴定为 春春的飞舞")
+                .description("后端 10:00 - 22:00 随缘在线")
+                .version("66.66")
                 .build();
     }
 }

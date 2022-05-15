@@ -6,15 +6,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import takeout.mainweb.Mapper.GoodMapper;
+import takeout.mainweb.Mapper.OrderMapper;
 import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.Service.LoginService;
-import takeout.mainweb.component.*;
+import takeout.mainweb.component.JsonUtils;
+import takeout.mainweb.component.KeyUtil;
+import takeout.mainweb.component.ResponseResult;
 import takeout.mainweb.entiy.Good;
+import takeout.mainweb.entiy.Order;
 import takeout.mainweb.entiy.User;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -25,36 +31,36 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private LoginService loginService;
-
-    @Autowired
     UserMapper userMapper;
-
     @Autowired
     GoodMapper goodMapper;
+    @Autowired
+    OrderMapper orderMapper;
+    @Autowired
+    private LoginService loginService;
 
     @ApiOperation("登录方法")
-    @RequestMapping (value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public ResponseResult login(@RequestParam("username") String name,
                                 @RequestParam("password") String pwd,
                                 HttpServletResponse response,
-                                HttpSession session){
+                                HttpSession session) {
 
-        return loginService.login(name,pwd);
+        return loginService.login(name, pwd);
 
     }
 
-    @RequestMapping(value="/hello",method = RequestMethod.GET)
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @ResponseBody
-    public String hello(){
+    public String hello() {
         return "hello";
     }
 
     @ApiOperation("退出方法")
-    @RequestMapping(value="/user/logout",method = RequestMethod.GET)
+    @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseResult logout(){
+    public ResponseResult logout() {
         return loginService.logout();
 
     }
@@ -71,7 +77,7 @@ public class UserController {
 
     }
 
-    @ApiOperation("卖家查看自己所有的商品（审核的，上架的，卖出的）")
+    @ApiOperation("卖家查看自己所有的商品（审核中，审核不通过，上架中，交易中，商品下架，交易成功）")
     @RequestMapping(value = "/sellerGoods/{goodID}", method = RequestMethod.GET)
     @ResponseBody
     public Object sellerGoods(@RequestParam("sellerID") String sellerID) {
@@ -81,13 +87,33 @@ public class UserController {
         return list;
     }
 
-    @ApiOperation("买家查看自己所有的商品（买到的）")
+    @ApiOperation("买家查看自己所有的商品（交易中，交易成功）")
     @RequestMapping(value = "/buyerGoods/{goodID}", method = RequestMethod.GET)
     @ResponseBody
     public Object buyerGoods(@RequestParam("buyerID") String buyerID) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
         wrapper.eq("buyer_id", buyerID);
         List<Good> list = goodMapper.selectList(wrapper);
+        return list;
+    }
+
+    @ApiOperation("卖家查看自己所有的订单（交易中，交易成功，交易关闭）")
+    @RequestMapping(value = "/sellerOrders/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object sellerOrders(@RequestParam("sellerID") String sellerID) {
+        QueryWrapper<Order> wrapper = new QueryWrapper<>();
+        wrapper.eq("seller_id", sellerID);
+        List<Order> list = orderMapper.selectList(wrapper);
+        return list;
+    }
+
+    @ApiOperation("买家查看自己所有的商品（交易中，交易成功，交易关闭）")
+    @RequestMapping(value = "/buyerOrders/{goodID}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object buyerOrders(@RequestParam("buyerID") String buyerID) {
+        QueryWrapper<Order> wrapper = new QueryWrapper<>();
+        wrapper.eq("buyer_id", buyerID);
+        List<Order> list = orderMapper.selectList(wrapper);
         return list;
     }
 
