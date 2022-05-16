@@ -1,6 +1,5 @@
 package takeout.mainweb.Controller;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,7 +13,6 @@ import takeout.mainweb.Mapper.GoodMapper;
 import takeout.mainweb.Mapper.OrderMapper;
 import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.Service.LoginService;
-import takeout.mainweb.component.JsonUtils;
 import takeout.mainweb.component.KeyUtil;
 import takeout.mainweb.component.ResponseResult;
 import takeout.mainweb.entiy.Good;
@@ -68,53 +66,53 @@ public class UserController {
     @ApiOperation("注册方法")
     @RequestMapping(value = "/regist", method = RequestMethod.POST)
     @ResponseBody
-    public Object regist(@RequestParam("username") String name,
+    public ResponseResult regist(@RequestParam("username") String name,
                          @RequestParam("password") String pwd) {
         String id = KeyUtil.getUniqueKey();
         User user = new User(id, name, pwd, "user", "", 0);
         int insert = userMapper.insert(user);
-        return JSON.toJSONString(new JsonUtils(0, "注册成功"));
+        return new ResponseResult(200,"注册成功");
 
     }
 
     @ApiOperation("卖家查看自己所有的商品（审核中，审核不通过，上架中，交易中，商品下架，交易成功）")
     @RequestMapping(value = "/sellerGoods/{goodID}", method = RequestMethod.GET)
     @ResponseBody
-    public Object sellerGoods(@RequestParam("sellerID") String sellerID) {
+    public ResponseResult sellerGoods(@RequestParam("sellerID") String sellerID) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
         wrapper.eq("seller_id", sellerID);
         List<Good> list = goodMapper.selectList(wrapper);
-        return list;
+        return new ResponseResult(200,"查询成功",list);
     }
 
     @ApiOperation("买家查看自己所有的商品（交易中，交易成功）")
     @RequestMapping(value = "/buyerGoods/{goodID}", method = RequestMethod.GET)
     @ResponseBody
-    public Object buyerGoods(@RequestParam("buyerID") String buyerID) {
+    public ResponseResult buyerGoods(@RequestParam("buyerID") String buyerID) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
         wrapper.eq("buyer_id", buyerID);
         List<Good> list = goodMapper.selectList(wrapper);
-        return list;
+        return new ResponseResult(200,"查询成功",list);
     }
 
     @ApiOperation("卖家查看自己所有的订单（交易中，交易成功，交易关闭）")
     @RequestMapping(value = "/sellerOrders/{goodID}", method = RequestMethod.GET)
     @ResponseBody
-    public Object sellerOrders(@RequestParam("sellerID") String sellerID) {
+    public ResponseResult sellerOrders(@RequestParam("sellerID") String sellerID) {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("seller_id", sellerID);
         List<Order> list = orderMapper.selectList(wrapper);
-        return list;
+        return new ResponseResult(200,"查询成功",list);
     }
 
-    @ApiOperation("买家查看自己所有的商品（交易中，交易成功，交易关闭）")
+    @ApiOperation("买家查看自己所有的订单（交易中，交易成功，交易关闭）")
     @RequestMapping(value = "/buyerOrders/{goodID}", method = RequestMethod.GET)
     @ResponseBody
-    public Object buyerOrders(@RequestParam("buyerID") String buyerID) {
+    public ResponseResult buyerOrders(@RequestParam("buyerID") String buyerID) {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("buyer_id", buyerID);
         List<Order> list = orderMapper.selectList(wrapper);
-        return list;
+        return new ResponseResult(200,"查询成功",list);
     }
 
 }

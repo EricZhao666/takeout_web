@@ -30,6 +30,12 @@ public class ResponseResult<T> {
         this.data = data;
     }
 
+    public ResponseResult(Integer code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+
     public Integer getCode() {
         return code;
     }
@@ -51,12 +57,6 @@ public class ResponseResult<T> {
     }
 
     public void setData(T data) {
-        this.data = data;
-    }
-
-    public ResponseResult(Integer code, String msg, T data) {
-        this.code = code;
-        this.msg = msg;
         this.data = data;
     }
 }
