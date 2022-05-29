@@ -15,6 +15,8 @@ import takeout.mainweb.entiy.Comment;
 
 import java.util.List;
 
+import static takeout.mainweb.component.KeyUtil.getUniqueKey;
+
 @Controller
 @Api("用户操作评论")
 @RequestMapping("/comment")
@@ -23,28 +25,45 @@ public class CommentController {
     @Autowired
     CommentMapper commentMapper;
 
-    @ApiOperation("查找对应商品的评论")
+    @ApiOperation("查看所有商品所有评论")
+    @RequestMapping(value = "/findAllUser", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseResult findAllUser() {
+        List<Comment> list = commentMapper.selectList(null);
+        return new ResponseResult(200, "查询成功", list);
+    }
+
+    @ApiOperation("查找商品的评论")
     @RequestMapping(value = "/findComment", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseResult findSellingGood(@RequestParam("goodID") String goodID) {
+    public ResponseResult findComment(@RequestParam("goodId") String goodId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-        wrapper.eq("good_id", goodID);
+        wrapper.eq("good_id", goodId);
         List<Comment> list = commentMapper.selectList(wrapper);
-        return new ResponseResult(200,"查询成功",list);
+        return new ResponseResult(200, "查询成功", list);
     }
 
     @ApiOperation("发布评论")
-    @RequestMapping(value = "/findComment", method = RequestMethod.GET)
+    @RequestMapping(value = "/postComment", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseResult postComment(@RequestParam("good_id") String goodID,
-                                     @RequestParam("publisher_id") String publisherID,
-                                     @RequestParam("content") String content) {
+    public ResponseResult postComment(@RequestParam("goodId") String goodId,
+                                      @RequestParam("userId") String userId,
+                                      @RequestParam("content") String content) {
         Comment comment = new Comment();
-        comment.setGoodId(goodID);
-        comment.setPublisherId(publisherID);
+        comment.setId(getUniqueKey());
+        comment.setGoodId(goodId);
+        comment.setUserId(userId);
         comment.setContent(content);
-        int result = commentMapper.insert(comment);
-        return new ResponseResult(200,"评论成功");
+        commentMapper.insert(comment);
+        return new ResponseResult(200, "评论成功");
+    }
+
+    @ApiOperation("删除评论")
+    @RequestMapping(value = "/deleteComment", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseResult deleteComment(@RequestParam("id") String id) {
+        commentMapper.deleteById(id);
+        return new ResponseResult(200, "删除成功");
     }
 
 }

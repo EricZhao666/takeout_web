@@ -11,12 +11,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class History {
     private String id;
     private String userId;
     private String goodId;
-    private String content;
 
     @TableField(fill = FieldFill.INSERT ,value = "create_time")
-    private LocalDateTime createTime;  //评论时间
+    private LocalDateTime createTime;  //点击时间
 }

@@ -11,15 +11,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+public class OrderForm {
     private String id;
     private String goodId;
-    private String goodName;
+    private String goodDescrip;
     private double price;
     private String type; //商品类型 用于推荐
     private String sellerId; //卖家ID
     private String buyerId; //卖家ID
     private String state; //交易状态
+    private String pictureUrl;  //图片URL
 
     @TableField(fill = FieldFill.INSERT, value = "create_time")
     private LocalDateTime createTime;  //订单创建时间

@@ -5,10 +5,8 @@ spring:
       useSSL=true & serverTimezone=Asia/Shanghai
     username: root
     password: 123456
-  mvc:
-    hiddenmethod:
-      filter:
-        enabled: true
+    filter:
+      enabled: true
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml

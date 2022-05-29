@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import takeout.mainweb.Mapper.GoodMapper;
-import takeout.mainweb.Mapper.OrderMapper;
+import takeout.mainweb.Mapper.OrderFormMapper;
 import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.component.ResponseResult;
 import takeout.mainweb.entiy.Good;
-import takeout.mainweb.entiy.Order;
+import takeout.mainweb.entiy.OrderForm;
 import takeout.mainweb.entiy.User;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class AdminController {
     UserMapper userMapper;
 
     @Autowired
-    OrderMapper orderMapper;
+    OrderFormMapper orderFormMapper;
 
     @ApiOperation("查看所有商品")
     @RequestMapping(value = "/findAllGood", method = RequestMethod.GET)
@@ -45,7 +45,7 @@ public class AdminController {
     @RequestMapping(value = "/findAllOrder", method = RequestMethod.GET)
     @ResponseBody
     public ResponseResult findAllOrder() {
-        List<Order> list = orderMapper.selectList(null);
+        List<OrderForm> list = orderFormMapper.selectList(null);
         return new ResponseResult(200,"查询成功",list);
     }
 
@@ -69,7 +69,7 @@ public class AdminController {
     }
 
     @ApiOperation("管理员通过ID搜索商品")
-    @RequestMapping(value = "/searchGoodByID/{goodID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/searchGoodByID", method = RequestMethod.GET)
     @ResponseBody
     public ResponseResult findGoodByID(@RequestParam("goodID") String goodID) {
 
@@ -80,7 +80,7 @@ public class AdminController {
     }
 
     @ApiOperation("管理员通过ID搜索用户")
-    @RequestMapping(value = "/searchUserByID/{userID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/searchUserByID", method = RequestMethod.GET)
     @ResponseBody
     public ResponseResult findUserByID(@RequestParam("userID") String userID) {
 
@@ -98,7 +98,7 @@ public class AdminController {
         wrapper.eq("id", goodID);
         Good good = goodMapper.selectOne(wrapper);
         good.setState("上架中");
-        int result = goodMapper.updateById(good);
+        goodMapper.updateById(good);
         return new ResponseResult(200,"审核成功，商品上架");
 
     }
@@ -111,14 +111,14 @@ public class AdminController {
         wrapper.eq("id", goodID);
         Good good = goodMapper.selectOne(wrapper);
         good.setState("审核不通过");
-        int result = goodMapper.updateById(good);
+        goodMapper.updateById(good);
 
         String sellerID = good.getSellerId();
         QueryWrapper<User> wrapper2 = new QueryWrapper<>();
         wrapper.eq("id", sellerID);
         User user = userMapper.selectOne(wrapper2);
         user.setFail(user.getFail() + 1);
-        int result2 = userMapper.updateById(user);
+        userMapper.updateById(user);
 
         return new ResponseResult(200,"审核不通过，商品等待修改");
 
