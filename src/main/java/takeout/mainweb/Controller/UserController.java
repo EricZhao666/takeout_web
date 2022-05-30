@@ -70,6 +70,13 @@ public class UserController {
     @ResponseBody
     public ResponseResult regist(@RequestParam("username") String name,
                          @RequestParam("password") String pwd) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("username", name);
+        List<User> list = userMapper.selectList(wrapper);
+        if (list.size() > 0) {
+            return new ResponseResult(409, "注册失败，用户名被占用");
+        }
+
         String id = KeyUtil.getUniqueKey();
         User user = new User(id, name, pwd, "user", "", 0);
         int insert = userMapper.insert(user);

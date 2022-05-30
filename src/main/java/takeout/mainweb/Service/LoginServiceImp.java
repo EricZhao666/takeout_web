@@ -45,6 +45,8 @@ public class LoginServiceImp implements LoginService{
         redisCache.setCacheObject("login:"+userId,user);
         HashMap<String,String> map = new HashMap<>();
         map.put("token",jwt);
+        map.put("id",user.getId());
+        map.put("name",user.getUsername());
         return new ResponseResult(200,"登陆成功",map);
     }
 

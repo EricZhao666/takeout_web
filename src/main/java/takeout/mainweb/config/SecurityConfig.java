@@ -29,11 +29,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/index","/login","/register",
+                .antMatchers("/", "/index","/user/login","/register",
                         "/v2/api-docs", "/configuration/ui", "/swagger-resources",
                         "/configuration/security", "/swagger-ui.html", "/webjars/**",
                         "/swagger-resources/configuration/ui","/swagge‌​r-ui.html","/user/logout",
-                        "/findSellingGood","/image/**")
+                        "/good/findSellingGood","/image/**","/user/regist")
                 //"/checked/**","/comment/**","/good/**","/user/**","/picture/**","/comment/**","/collect/**",
                 .permitAll()
                 .antMatchers("/user/admin").hasAuthority("admin")
