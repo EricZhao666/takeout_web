@@ -21,8 +21,7 @@ import takeout.mainweb.entiy.OrderForm;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static takeout.mainweb.component.KeyUtil.getUniqueKey;
 
@@ -47,7 +46,7 @@ public class GoodController {
     @Value("4934d114v1.qicp.vip/image/")
     private String webPath;
 
-    @ApiOperation("用户上传商品，等待审核")
+    @ApiOperation("卖家上传商品，等待审核")
     @RequestMapping(value = "/uploadGood", method = RequestMethod.POST)
     @ResponseBody
     public ResponseResult uploadGood(@RequestParam("goodDescrip") String goodDescrip,
@@ -72,7 +71,18 @@ public class GoodController {
                 //保存文件
                 if (!file.isEmpty()) {
                     String fileName = file.getOriginalFilename();//得到文件名
-                    String suffixName = fileName.substring(fileName.lastIndexOf("."));//得到后缀名
+                    // 解析到文件后缀，判断是否合法
+                    int index = fileName.lastIndexOf(".");
+                    String suffix = null;
+                    if (index == -1 || (suffix = fileName.substring(index + 1)).isEmpty()) {
+                        return new ResponseResult(400, "文件后缀不能为空");
+                    }
+                    // 允许上传的文件后缀列表
+                    Set<String> allowSuffix = new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif"));
+                    if (!allowSuffix.contains(suffix.toLowerCase())) {
+                        return new ResponseResult(400, "非法的文件，不允许的文件类型：" + suffix);
+                    }
+                    String suffixName = "." + suffix;//得到后缀名
                     String realFileName = fileName.substring(0, fileName.lastIndexOf(suffixName));//得到不包含后缀的文件名
                     fileName = id + (i + 1) + suffixName;
                     String fileUrl = imagePath + fileName;
@@ -86,12 +96,71 @@ public class GoodController {
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
-
                 }
             }
         }
         good.setPictureUrl(pictureUrl);
         goodMapper.insert(good);
+        return new ResponseResult(200, "上传成功");
+    }
+
+    @ApiOperation("卖家修改不通过的商品信息，等待审核")
+    @RequestMapping(value = "/uploadGoodAgain", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseResult uploadGoodAgain(@RequestParam("goodId") String goodId,
+                                          @RequestParam("goodDescrip") String goodDescrip,
+                                          @RequestParam("price") double price,
+                                          @RequestParam("type") String type,
+                                          @RequestParam("sellerId") String sellerId,
+                                          @RequestParam("pictures") MultipartFile[] files) {
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", goodId);
+        Good good = goodMapper.selectOne(wrapper);
+
+        good.setGoodDescrip(goodDescrip);
+        good.setPrice(price);
+        good.setType(type);
+        good.setSellerId(sellerId);
+        good.setState("审核中");
+        String pictureUrl = "";
+        //判断file数组不能为空并且长度大于0
+        if (files != null && files.length > 0) {
+            //循环获取file数组中得文件
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile file = files[i];
+                //保存文件
+                if (!file.isEmpty()) {
+                    String fileName = file.getOriginalFilename();//得到文件名
+                    // 解析到文件后缀，判断是否合法
+                    int index = fileName.lastIndexOf(".");
+                    String suffix = null;
+                    if (index == -1 || (suffix = fileName.substring(index + 1)).isEmpty()) {
+                        return new ResponseResult(400, "文件后缀不能为空");
+                    }
+                    // 允许上传的文件后缀列表
+                    Set<String> allowSuffix = new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif"));
+                    if (!allowSuffix.contains(suffix.toLowerCase())) {
+                        return new ResponseResult(400, "非法的文件，不允许的文件类型：" + suffix);
+                    }
+                    String suffixName = "." + suffix;//得到后缀名
+                    String realFileName = fileName.substring(0, fileName.lastIndexOf(suffixName));//得到不包含后缀的文件名
+                    fileName = goodId + (i + 1) + suffixName;
+                    String fileUrl = imagePath + fileName;
+                    pictureUrl += webPath + fileName + " ";
+                    File tempfile = new File(fileUrl);
+                    if (!tempfile.getParentFile().exists()) {
+                        tempfile.getParentFile().mkdirs();
+                    }
+                    try {
+                        file.transferTo(tempfile);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+        }
+        good.setPictureUrl(pictureUrl);
+        goodMapper.updateById(good);
         return new ResponseResult(200, "上传成功");
     }
 

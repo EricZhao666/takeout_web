@@ -12,6 +12,7 @@ public class User {
     private String username;
     private String password;
     private String role;
+    private String pictureUrl;
     private String contact; //联系方式
     private Integer fail; //审核失败次数
 }
