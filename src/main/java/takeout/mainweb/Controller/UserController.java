@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +39,8 @@ public class UserController {
     OrderFormMapper orderFormMapper;
     @Autowired
     private LoginService loginService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @ApiOperation("登录方法")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -78,8 +81,9 @@ public class UserController {
         }
 
         String id = KeyUtil.getUniqueKey();
+        pwd = passwordEncoder.encode(pwd);//密码加密
         User user = new User(id, name, pwd, "user", "", 0);
-        int insert = userMapper.insert(user);
+        userMapper.insert(user);
         return new ResponseResult(200,"注册成功");
     }
 
