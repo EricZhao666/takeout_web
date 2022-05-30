@@ -27,8 +27,7 @@ import takeout.mainweb.entiy.User;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -73,7 +72,7 @@ public class UserController {
     }
 
     @ApiOperation("退出方法")
-    @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
     public ResponseResult logout() {
         return loginService.logout();
@@ -93,13 +92,13 @@ public class UserController {
         }
 
         String id = KeyUtil.getUniqueKey();
-        pwd = passwordEncoder.encode(pwd);//密码加密
+        pwd = passwordEncoder.encode(pwd);//密码BCryptPasswordEncoder加密
         User user = new User(id, name, pwd, "user", "", "", 0);
         userMapper.insert(user);
         return new ResponseResult(200, "注册成功");
     }
 
-    @ApiOperation("修改用户联系方式")
+    @ApiOperation("添加/修改用户联系方式")
     @RequestMapping(value = "/modifyContact", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseResult modifyContact(@RequestParam("userId") String userId,
@@ -112,7 +111,7 @@ public class UserController {
         return new ResponseResult(200, "修改成功");
     }
 
-    @ApiOperation("修改用户头像")
+    @ApiOperation("添加/修改用户头像")
     @RequestMapping(value = "/modifyPicture", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseResult modifyPicture(@RequestParam("userId") String userId,
@@ -126,11 +125,22 @@ public class UserController {
             //保存文件
             if (!file.isEmpty()) {
                 String fileName = file.getOriginalFilename();//得到文件名
-                String suffixName = fileName.substring(fileName.lastIndexOf("."));//得到后缀名
+                // 解析到文件后缀，判断是否合法
+                int index = fileName.lastIndexOf(".");
+                String suffix = null;
+                if (index == -1 || (suffix = fileName.substring(index + 1)).isEmpty()) {
+                    return new ResponseResult(400, "文件后缀不能为空");
+                }
+                // 允许上传的文件后缀列表
+                Set<String> allowSuffix = new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif"));
+                if (!allowSuffix.contains(suffix.toLowerCase())) {
+                    return new ResponseResult(400, "非法的文件，不允许的文件类型：" + suffix);
+                }
+                String suffixName = "." + suffix;//得到后缀名
                 String realFileName = fileName.substring(0, fileName.lastIndexOf(suffixName));//得到不包含后缀的文件名
                 fileName = userId + suffixName;
-                String fileUrl = imagePath + fileName;
-                pictureUrl += webPath + fileName + " ";
+                String fileUrl = imagePath + fileName;  //拼接图片的本地URL
+                pictureUrl += webPath + fileName + " ";  //拼接图片的内网穿透URL
                 File tempfile = new File(fileUrl);
                 if (!tempfile.getParentFile().exists()) {
                     tempfile.getParentFile().mkdirs();

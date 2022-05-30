@@ -14,10 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import takeout.mainweb.Mapper.GoodMapper;
 import takeout.mainweb.Mapper.HistoryMapper;
 import takeout.mainweb.Mapper.OrderFormMapper;
+import takeout.mainweb.Mapper.UserMapper;
 import takeout.mainweb.component.ResponseResult;
-import takeout.mainweb.entiy.Good;
-import takeout.mainweb.entiy.History;
-import takeout.mainweb.entiy.OrderForm;
+import takeout.mainweb.entiy.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +32,8 @@ public class GoodController {
 
     @Autowired
     GoodMapper goodMapper;
+    @Autowired
+    UserMapper userMapper;
 
     @Autowired
     OrderFormMapper orderFormMapper;
@@ -220,9 +221,17 @@ public class GoodController {
                                     @RequestParam("goodId") String goodId) {
 
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.like("id", goodId);
-        List<Good> list = goodMapper.selectList(wrapper);
+        wrapper.eq("id", goodId);
 
+        Good good = goodMapper.selectOne(wrapper);
+
+        QueryWrapper<User> wrapper2 = new QueryWrapper<>();
+        wrapper2.eq("id", good.getSellerId());
+        User user = userMapper.selectOne(wrapper2);
+
+        SellGood sellGood = new SellGood(good.getId(), good.getGoodDescrip(), good.getPrice(), good.getType(), good.getSellerId(), user.getUsername(), user.getPictureUrl(), good.getBuyerId(), good.getState(), good.getPictureUrl(), good.getCreateTime(), good.getUpdateTime());
+        List<SellGood> list = new ArrayList();
+        list.add(sellGood);
         History history = new History();
         history.setId(getUniqueKey());
         history.setUserId(userId);

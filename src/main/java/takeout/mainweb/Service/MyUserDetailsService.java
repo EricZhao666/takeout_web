@@ -30,7 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
         QueryWrapper<User> wrapper=new QueryWrapper<>();
         wrapper.eq("username",username);
         User user=userMapper.selectOne(wrapper);
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        //user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
 
         if (user==null){

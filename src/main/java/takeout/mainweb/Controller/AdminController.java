@@ -71,10 +71,10 @@ public class AdminController {
     @ApiOperation("管理员通过ID搜索商品")
     @RequestMapping(value = "/searchGoodByID", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseResult findGoodByID(@RequestParam("goodID") String goodID) {
+    public ResponseResult findGoodByID(@RequestParam("goodId") String goodId) {
 
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", goodID);
+        wrapper.eq("id", goodId);
         List<Good> list = goodMapper.selectList(wrapper);
         return new ResponseResult(200,"查询成功",list);
     }
@@ -82,10 +82,9 @@ public class AdminController {
     @ApiOperation("管理员通过ID搜索用户")
     @RequestMapping(value = "/searchUserByID", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseResult findUserByID(@RequestParam("userID") String userID) {
-
+    public ResponseResult findUserByID(@RequestParam("userId") String userId) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", userID);
+        wrapper.eq("id", userId);
         List<User> list = userMapper.selectList(wrapper);
         return new ResponseResult(200,"查询成功",list);
     }
@@ -93,9 +92,9 @@ public class AdminController {
     @ApiOperation("通过ID，审核通过商品")
     @RequestMapping(value = "/checkGood", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseResult checkGood(@RequestParam("goodID") String goodID) {
+    public ResponseResult checkGood(@RequestParam("goodId") String goodId) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", goodID);
+        wrapper.eq("id", goodId);
         Good good = goodMapper.selectOne(wrapper);
         good.setState("上架中");
         goodMapper.updateById(good);
@@ -106,9 +105,9 @@ public class AdminController {
     @ApiOperation("通过ID，审核不通过商品")
     @RequestMapping(value = "/checkBadGood", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseResult checkBadGood(@RequestParam("goodID") String goodID) {
+    public ResponseResult checkBadGood(@RequestParam("goodId") String goodId) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", goodID);
+        wrapper.eq("id", goodId);
         Good good = goodMapper.selectOne(wrapper);
         good.setState("审核不通过");
         goodMapper.updateById(good);

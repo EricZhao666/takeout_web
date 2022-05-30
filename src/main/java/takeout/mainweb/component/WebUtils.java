@@ -3,7 +3,7 @@ package takeout.mainweb.component;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class WebUtils
+public class WebUtils  //没用过
 {
     /**
      * 将字符串渲染到客户端
@@ -22,7 +22,7 @@ public class WebUtils
         }
         catch (IOException e)
         {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
         return null;
     }

@@ -2,7 +2,7 @@ package takeout.mainweb.component;
 
 import java.security.MessageDigest;
 
-public class MD5Util {
+public class MD5Util {  //没用过
 
     public static String encode(String password,String salt){
         password = password + salt;

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderForm {
+public class OrderForm {  //订单信息
     private String id;
     private String goodId;
     private String goodDescrip;

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class History {
+public class History {  //历史浏览
     private String id;
     private String userId;
     private String goodId;
